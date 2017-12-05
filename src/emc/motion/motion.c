@@ -326,6 +326,10 @@ static int init_hal_io(void)
     if ((retval = hal_pin_bit_newf(HAL_IN, &(emcmot_hal_data->spindle_inhibit), mot_comp_id, "motion.spindle-inhibit")) != 0) goto error;
     *(emcmot_hal_data->spindle_inhibit) = 0;
 
+    /* simple_tp_planner selector -- for testing */
+    if ((retval = hal_pin_u32_newf(HAL_IN, &(emcmot_hal_data->simple_tp_method), mot_comp_id, "motion.simple-tp-method")) != 0) goto error;
+    *(emcmot_hal_data->simple_tp_method) = 0; // select simple_tp planner
+
     // spindle orient pins
     if ((retval = hal_pin_float_newf(HAL_OUT, &(emcmot_hal_data->spindle_orient_angle), mot_comp_id, "motion.spindle-orient-angle")) < 0) goto error;
     if ((retval = hal_pin_s32_newf(HAL_OUT, &(emcmot_hal_data->spindle_orient_mode), mot_comp_id, "motion.spindle-orient-mode")) < 0) goto error;
@@ -702,11 +706,18 @@ static int init_comm_buffers(void)
       emcmot_axis_t *axis;
       axis = &axes[axis_num];
       axis->locking_joint = -1;
+      axis->teleop_tp.min_pos = -1e308;
+      axis->teleop_tp.max_pos =  1e308;
+      axis->teleop_tp.out_old = 0;
    }
     /* init per-joint stuff */
     for (joint_num = 0; joint_num < emcmotConfig->numJoints; joint_num++) {
 	/* point to structure for this joint */
 	joint = &joints[joint_num];
+
+	joint->free_tp.min_pos = -1e308;
+	joint->free_tp.max_pos =  1e308;
+	joint->free_tp.out_old = 0;
 
 	/* init the config fields with some "reasonable" defaults" */
 	joint->type = 0;

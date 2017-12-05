@@ -12,7 +12,6 @@
 *
 * Copyright (c) 2004 All rights reserved.
 ********************************************************************/
-
 #include "posemath.h"
 #include "rtapi.h"
 #include "hal.h"
@@ -50,6 +49,8 @@ static unsigned long last_period = 0;
 
 /* servo cycle time */
 static double servo_period;
+
+static void(*simple_planner)() = simple_tp_update; 
 
 /***********************************************************************
 *                      LOCAL FUNCTION PROTOTYPES                       *
@@ -750,6 +751,20 @@ static void set_operating_mode(void)
             (&axes[8])->teleop_tp.curr_pos = emcmotStatus->carte_pos_cmd.w;
         }
 	}
+
+        // simple planner method update
+        if (1 == *(emcmot_hal_data->simple_tp_method))  {
+            if (simple_planner != limit3_planner_update) {
+                rtapi_print_msg(RTAPI_MSG_ERR,"Switching to limit3 planner\n");
+                simple_planner = limit3_planner_update;
+            }
+        } else {
+            if (simple_planner != simple_tp_update) {
+                rtapi_print_msg(RTAPI_MSG_ERR,"Switching to simple_tp planner\n");
+                simple_planner = simple_tp_update;
+            }
+        }
+
 	SET_MOTION_ENABLE_FLAG(1);
 	/* clear any outstanding motion errors when going into enabled state */
 	SET_MOTION_ERROR_FLAG(0);
@@ -1149,7 +1164,9 @@ static void get_pos_cmds(long period)
             } else {
                 joint->free_tp.max_acc = joint->acc_limit;
             }
-            simple_tp_update(&(joint->free_tp), servo_period );
+
+            simple_planner(&(joint->free_tp), servo_period);
+
             /* copy free TP output to pos_cmd and coarse_pos */
             joint->pos_cmd = joint->free_tp.curr_pos;
             joint->vel_cmd = joint->free_tp.curr_vel;
@@ -1294,7 +1311,9 @@ static void get_pos_cmds(long period)
             // teleop_tp.max_vel is always positive
             if(axis->teleop_tp.max_vel > axis->vel_limit)
                 axis->teleop_tp.max_vel = axis->vel_limit;
-            simple_tp_update(&(axis->teleop_tp), servo_period);
+
+            simple_planner(&(axis->teleop_tp), servo_period);
+
             axis->teleop_vel_cmd = axis->teleop_tp.curr_vel;
             axis->pos_cmd = axis->teleop_tp.curr_pos;
 

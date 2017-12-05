@@ -192,6 +192,7 @@ typedef struct {
     hal_float_t *tooloffset_v;
     hal_float_t *tooloffset_w;
 
+    hal_u32_t   *simple_tp_method;
     joint_hal_t joint[EMCMOT_MAX_JOINTS];	/* data for each joint */
     axis_hal_t axis[EMCMOT_MAX_AXIS];	        /* data for each axis */
 

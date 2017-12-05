@@ -287,6 +287,7 @@ HEADERS := \
     emc/motion/emcmotcfg.h \
     emc/motion/motion.h \
     emc/motion/simple_tp.h \
+    emc/motion/limit3_planner_code.h \
     emc/motion/usrmotintf.h \
     emc/nml_intf/canon.hh \
     emc/nml_intf/canon_position.hh \
@@ -975,6 +976,7 @@ motmod-objs += emc/motion/command.o
 motmod-objs += emc/motion/control.o
 motmod-objs += emc/motion/homing.o
 motmod-objs += emc/motion/simple_tp.o
+motmod-objs += emc/motion/limit3_planner.o
 motmod-objs += emc/motion/emcmotutil.o
 motmod-objs += emc/motion/stashf.o
 motmod-objs += emc/motion/dbuf.o
