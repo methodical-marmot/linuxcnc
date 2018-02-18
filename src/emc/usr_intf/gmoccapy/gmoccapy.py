@@ -2651,6 +2651,10 @@ class gmoccapy(object):
 # from here only needed, if the DRO button will remain in gmoccapy
         if order[0] == "Abs" and self.widgets.tbtn_rel.get_label() != "Abs":
             self.widgets.tbtn_rel.set_active(False)
+            self.halcomp["is-dro-in-absolute-position"] = True
+        else:
+            self.halcomp["is-dro-in-absolute-position"] = False
+
         if order[0] == "Rel" and self.widgets.tbtn_rel.get_label() != self.widgets.Combi_DRO_x.system:
             self.widgets.tbtn_rel.set_active(True)
         if order[0] == "DTG":
@@ -4710,6 +4714,9 @@ class gmoccapy(object):
         # make a pin to set ignore limits
         pin = self.halcomp.newpin("ignore-limits", hal.HAL_BIT, hal.HAL_IN)
         hal_glib.GPin(pin).connect("value_changed", self._ignore_limits)
+
+        # make a pin to indicate dro mode
+        self.halcomp.newpin("is-dro-in-absolute-position", hal.HAL_BIT, hal.HAL_OUT)
 
 # Hal Pin Handling End
 # =========================================================
