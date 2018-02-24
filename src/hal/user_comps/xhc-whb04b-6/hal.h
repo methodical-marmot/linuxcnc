@@ -167,6 +167,22 @@ public:
         //! to be connected to \ref axis.5.jog-counts
         hal_s32_t* axisCJogCounts{nullptr};
 
+        //! to be connected to \ref axis.0.jog-delta
+        hal_s32_t* axisXJogDelta{nullptr};
+        //! to be connected to \ref axis.1.jog-delta
+        hal_s32_t* axisYJogDelta{nullptr};
+        //! to be connected to \ref axis.2.jog-delta
+        hal_s32_t* axisZJogDelta{nullptr};
+        //! to be connected to \ref axis.3.jog-delta
+        hal_s32_t* axisAJogDelta{nullptr};
+        //! to be connected to \ref axis.4.jog-delta
+        hal_s32_t* axisBJogDelta{nullptr};
+        //! to be connected to \ref axis.5.jog-delta
+        hal_s32_t* axisCJogDelta{nullptr};
+
+        hal_bit_t* axisXIncreasing{nullptr};
+        hal_bit_t* axisXDecreasing{nullptr};
+
         //! to be connected to \ref axis.0.jog-enable
         hal_bit_t* axisXJogEnable{nullptr};
         //! to be connected to \ref axis.1.jog-enable
@@ -210,6 +226,9 @@ public:
         hal_bit_t* feedValueSelected0_01{nullptr};
         hal_bit_t* feedValueSelected0_1{nullptr};
         hal_bit_t* feedValueSelected1_0{nullptr};
+        hal_bit_t* feedValueSelected60{nullptr};
+        hal_bit_t* feedValueSelected100{nullptr};
+        hal_bit_t* feedValueSelectedLead{nullptr};
 
         //! to be connected to \ref  \ref halui.feed-override.scale
         hal_float_t* feedOverrideScale{nullptr};
@@ -429,6 +448,10 @@ public:
     //! \param selected true if 1.0 is selected, false otherwise
     void setFeedValueSelected1_0(bool selected);
 
+    void setFeedValueSelected60(bool selected);
+    void setFeedValueSelected100(bool selected);
+    void setFeedValueSelectedLead(bool selected);
+
     //! Returns the spindle speed.
     //! \return the spindle speed in rounds per second
     hal_float_t getSpindleSpeedAbsRpm() const;
@@ -495,6 +518,7 @@ public:
     //! Writes the corresponding counter to to each axis' count.
     //! \param counters values to propagate to each axis
     void setJogCounts(const HandWheelCounters& counters);
+    void setJogDelta(HandWheelCounters::CounterNameToIndex currentAxisName, int8_t delta);
 
     //! Returns the axis position.
     //! \param absolute true absolute, false relative

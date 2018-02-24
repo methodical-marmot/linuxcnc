@@ -163,6 +163,16 @@ Hal::~Hal()
     freeSimulatedPin((void**)(&memory->out.axisBJogCounts));
     freeSimulatedPin((void**)(&memory->out.axisCJogCounts));
 
+    freeSimulatedPin((void**)(&memory->out.axisXJogDelta));
+    freeSimulatedPin((void**)(&memory->out.axisYJogDelta));
+    freeSimulatedPin((void**)(&memory->out.axisZJogDelta));
+    freeSimulatedPin((void**)(&memory->out.axisAJogDelta));
+    freeSimulatedPin((void**)(&memory->out.axisBJogDelta));
+    freeSimulatedPin((void**)(&memory->out.axisCJogDelta));
+
+    freeSimulatedPin((void**)(&memory->out.axisXIncreasing));
+    freeSimulatedPin((void**)(&memory->out.axisXDecreasing));
+
     freeSimulatedPin((void**)(&memory->out.axisXJogEnable));
     freeSimulatedPin((void**)(&memory->out.axisYJogEnable));
     freeSimulatedPin((void**)(&memory->out.axisZJogEnable));
@@ -188,6 +198,9 @@ Hal::~Hal()
     freeSimulatedPin((void**)(&memory->out.feedValueSelected0_01));
     freeSimulatedPin((void**)(&memory->out.feedValueSelected0_1));
     freeSimulatedPin((void**)(&memory->out.feedValueSelected1_0));
+    freeSimulatedPin((void**)(&memory->out.feedValueSelected60));
+    freeSimulatedPin((void**)(&memory->out.feedValueSelected100));
+    freeSimulatedPin((void**)(&memory->out.feedValueSelectedLead));
 
     freeSimulatedPin((void**)(&memory->out.feedOverrideScale));
     freeSimulatedPin((void**)(&memory->out.feedOverrideCountEnable));
@@ -481,31 +494,39 @@ void Hal::init(const MetaButtonCodes* metaButtons, const KeyCodes& keyCodes)
     }
 
     newHalSigned32(HAL_OUT, &(memory->out.axisXJogCounts), mHalCompId, "%s.axis.0.jog-counts", mComponentPrefix);
+    newHalSigned32(HAL_OUT, &(memory->out.axisXJogDelta), mHalCompId, "%s.axis.0.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisXJogEnable), mHalCompId, "%s.axis.0.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisXJogScale), mHalCompId, "%s.axis.0.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisXSetVelocityMode), mHalCompId, "%s.axis.0.jog-vel-mode", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisXIncreasing), mHalCompId, "%s.axis.0.jog-increasing", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisXDecreasing), mHalCompId, "%s.axis.0.jog-decreasing", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisYJogCounts), mHalCompId, "%s.axis.1.jog-counts", mComponentPrefix);
+    newHalSigned32(HAL_OUT, &(memory->out.axisYJogDelta), mHalCompId, "%s.axis.1.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisYJogEnable), mHalCompId, "%s.axis.1.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisYJogScale), mHalCompId, "%s.axis.1.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisYSetVelocityMode), mHalCompId, "%s.axis.1.jog-vel-mode", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisZJogCounts), mHalCompId, "%s.axis.2.jog-counts", mComponentPrefix);
+    newHalSigned32(HAL_OUT, &(memory->out.axisZJogDelta), mHalCompId, "%s.axis.2.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisZJogEnable), mHalCompId, "%s.axis.2.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisZJogScale), mHalCompId, "%s.axis.2.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisZSetVelocityMode), mHalCompId, "%s.axis.2.jog-vel-mode", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisAJogCounts), mHalCompId, "%s.axis.3.jog-counts", mComponentPrefix);
+    newHalSigned32(HAL_OUT, &(memory->out.axisAJogDelta), mHalCompId, "%s.axis.3.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisAJogEnable), mHalCompId, "%s.axis.3.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisAJogScale), mHalCompId, "%s.axis.3.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisASetVelocityMode), mHalCompId, "%s.axis.3.jog-vel-mode", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisBJogCounts), mHalCompId, "%s.axis.4.jog-counts", mComponentPrefix);
+    newHalSigned32(HAL_OUT, &(memory->out.axisBJogDelta), mHalCompId, "%s.axis.4.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisBJogEnable), mHalCompId, "%s.axis.4.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisBJogScale), mHalCompId, "%s.axis.4.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisBSetVelocityMode), mHalCompId, "%s.axis.4.jog-vel-mode", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisCJogCounts), mHalCompId, "%s.axis.5.jog-counts", mComponentPrefix);
+    newHalSigned32(HAL_OUT, &(memory->out.axisCJogDelta), mHalCompId, "%s.axis.5.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisCJogEnable), mHalCompId, "%s.axis.5.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisCJogScale), mHalCompId, "%s.axis.5.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisCSetVelocityMode), mHalCompId, "%s.axis.5.jog-vel-mode", mComponentPrefix);
@@ -563,6 +584,9 @@ void Hal::init(const MetaButtonCodes* metaButtons, const KeyCodes& keyCodes)
               mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.feedValueSelected0_1), mHalCompId, "%s.halui.feed.selected-0.1", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.feedValueSelected1_0), mHalCompId, "%s.halui.feed.selected-1.0", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.feedValueSelected60), mHalCompId, "%s.halui.feed.selected-60", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.feedValueSelected100), mHalCompId, "%s.halui.feed.selected-100", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.feedValueSelectedLead), mHalCompId, "%s.halui.feed.selected-lead", mComponentPrefix);
 
     newHalFloat(HAL_OUT, &(memory->out.feedOverrideScale), mHalCompId, "%s.halui.feed-override.scale",
                 mComponentPrefix);
@@ -1023,6 +1047,27 @@ void Hal::setFeedValueSelected1_0(bool selected)
 
 // ----------------------------------------------------------------------
 
+void Hal::setFeedValueSelected60(bool selected)
+{
+    *memory->out.feedValueSelected60 = selected;
+}
+
+// ----------------------------------------------------------------------
+
+void Hal::setFeedValueSelected100(bool selected)
+{
+    *memory->out.feedValueSelected100 = selected;
+}
+
+// ----------------------------------------------------------------------
+
+void Hal::setFeedValueSelectedLead(bool selected)
+{
+    *memory->out.feedValueSelectedLead = selected;
+}
+
+// ----------------------------------------------------------------------
+
 void Hal::setFeedOverrideScale(hal_float_t scale)
 {
     *memory->out.feedOverrideScale = scale;
@@ -1371,6 +1416,38 @@ void Hal::setJogCounts(const HandWheelCounters& counters)
     if (counters.isLeadCounterActive())
     {
         *memory->out.feedOverrideCounts = counters.counts(HandWheelCounters::CounterNameToIndex::LEAD);
+    }
+}
+
+// ----------------------------------------------------------------------
+
+void Hal::setJogDelta(HandWheelCounters::CounterNameToIndex activeAxisName, int8_t delta)
+{
+    if (HandWheelCounters::CounterNameToIndex::AXIS_X == activeAxisName)
+    {
+      *memory->out.axisXJogDelta = delta;
+      *memory->out.axisXIncreasing = delta > 0;
+      *memory->out.axisXDecreasing = delta < 0;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_Y == activeAxisName)
+    {
+      *memory->out.axisYJogDelta = delta;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_Z == activeAxisName)
+    {
+      *memory->out.axisZJogDelta = delta;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_A == activeAxisName)
+    {
+      *memory->out.axisAJogDelta = delta;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_B == activeAxisName)
+    {
+      *memory->out.axisBJogDelta = delta;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_C == activeAxisName)
+    {
+      *memory->out.axisCJogDelta = delta;
     }
 }
 

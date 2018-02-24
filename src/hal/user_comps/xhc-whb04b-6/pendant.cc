@@ -1507,6 +1507,18 @@ void Pendant::dispatchActiveFeedToHal(const KeyCode& feed, bool isActive)
     {
         mHal.setFeedValueSelected1_0(isActive);
     }
+    else if (feed.code == KeyCodes::Feed.percent_60.code)
+    {
+        mHal.setFeedValueSelected60(isActive);
+    }
+    else if (feed.code == KeyCodes::Feed.percent_100.code)
+    {
+        mHal.setFeedValueSelected100(isActive);
+    }
+    else if (feed.code == KeyCodes::Feed.lead.code)
+    {
+        mHal.setFeedValueSelectedLead(isActive);
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -1594,7 +1606,6 @@ void Pendant::onFeedInactiveEvent(const KeyCode& feed)
 
 bool Pendant::onJogDialEvent(const HandWheelCounters& counters, int8_t delta)
 {
-
     if (HandWheelCounters::CounterNameToIndex::UNDEFINED != counters.activeCounter() &&
         counters.counts() != 0)
     {
@@ -1607,6 +1618,7 @@ bool Pendant::onJogDialEvent(const HandWheelCounters& counters, int8_t delta)
                 mHal.getFeedOverrideMaxValue() * 100);
         }
         mHal.setJogCounts(counters);
+        mHal.setJogDelta(counters.activeCounter(), delta);
         mDisplay.onJogDialEvent(counters, delta);
         return true;
     }

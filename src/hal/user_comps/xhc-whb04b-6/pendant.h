@@ -515,11 +515,6 @@ class Display : public KeyEventListener
 {
 public:
 
-    enum class AxisPositionMethod
-    {
-        RELATIVE,
-        ABSOLUTE
-    };
     enum class AxisGroup
     {
         XYZ,
