@@ -78,6 +78,14 @@ public:
         //! to be connected to \ref halui.axis.5.pos-relative
         hal_float_t* axisCPositionRelative{nullptr};
 
+        //! to be connected to \ref axis.0.jog-count-enable 
+        hal_bit_t* axisXJogCountDisable{nullptr};
+        hal_bit_t* axisYJogCountDisable{nullptr};
+        hal_bit_t* axisZJogCountDisable{nullptr};
+        hal_bit_t* axisAJogCountDisable{nullptr};
+        hal_bit_t* axisBJogCountDisable{nullptr};
+        hal_bit_t* axisCJogCountDisable{nullptr};
+
         //! to be connected to \ref stepgen.00.maxvel
         hal_float_t* stepgenXMaxVelocity{nullptr};
         //! to be connected to \ref stepgen.01.maxvel
@@ -181,7 +189,18 @@ public:
         hal_s32_t* axisCJogDelta{nullptr};
 
         hal_bit_t* axisXIncreasing{nullptr};
+        hal_bit_t* axisYIncreasing{nullptr};
+        hal_bit_t* axisZIncreasing{nullptr};
+        hal_bit_t* axisAIncreasing{nullptr};
+        hal_bit_t* axisBIncreasing{nullptr};
+        hal_bit_t* axisCIncreasing{nullptr};
+
         hal_bit_t* axisXDecreasing{nullptr};
+        hal_bit_t* axisYDecreasing{nullptr};
+        hal_bit_t* axisZDecreasing{nullptr};
+        hal_bit_t* axisADecreasing{nullptr};
+        hal_bit_t* axisBDecreasing{nullptr};
+        hal_bit_t* axisCDecreasing{nullptr};
 
         //! to be connected to \ref axis.0.jog-enable
         hal_bit_t* axisXJogEnable{nullptr};
@@ -518,7 +537,8 @@ public:
     //! Writes the corresponding counter to to each axis' count.
     //! \param counters values to propagate to each axis
     void setJogCounts(const HandWheelCounters& counters);
-    void setJogDelta(HandWheelCounters::CounterNameToIndex currentAxisName, int8_t delta);
+    void setJogDelta(const HandWheelCounters::CounterNameToIndex currentAxisName, int8_t delta);
+    bool isJogCountDisabled(const HandWheelCounters::CounterNameToIndex currentAxisName);
 
     //! Returns the axis position.
     //! \param absolute true absolute, false relative

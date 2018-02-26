@@ -453,7 +453,7 @@ public:
     Handwheel(const FeedRotaryButton& feedButton, KeyEventListener* listener = nullptr);
     ~Handwheel();
     void setMode(HandWheelCounters::CounterNameToIndex mode);
-    void count(int8_t delta);
+    void count(int8_t delta, bool countDisabled);
     const HandWheelCounters& counters() const;
     HandWheelCounters& counters();
     //! En-/disables the incremental counter.

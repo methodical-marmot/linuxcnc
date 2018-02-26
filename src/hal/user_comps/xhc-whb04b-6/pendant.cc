@@ -824,13 +824,16 @@ void Handwheel::setMode(HandWheelCounters::CounterNameToIndex activeCounterMode)
 
 // ----------------------------------------------------------------------
 
-void Handwheel::count(int8_t delta)
+void Handwheel::count(int8_t delta, bool countDisabled)
 {
     assert(mEventListener != nullptr);
 
     if (mIsEnabled)
     {
-        mCounters.count(delta);
+        if (!countDisabled) 
+        {
+            mCounters.count(delta);
+        }
         mEventListener->onJogDialEvent(mCounters, delta);
     }
 
@@ -1056,7 +1059,7 @@ void Pendant::processEvent(const KeyCode& keyCode,
     mHal.trySetManualMode(true);
     mHandWheel.setEnabled(mHal.getIsMachineOn());
     mCurrentButtonsState.update(keyCode, modifierCode, rotaryButtonAxisKeyCode, rotaryButtonFeedKeyCode);
-    mHandWheel.count(handWheelStepCount);
+    mHandWheel.count(handWheelStepCount, mHal.isJogCountDisabled(mHandWheel.counters().activeCounter()));
     mDisplay.updateData();
     mHal.trySetManualMode(false);
 }

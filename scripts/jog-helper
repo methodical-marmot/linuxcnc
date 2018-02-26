@@ -1,0 +1,209 @@
+#!/usr/bin/python2
+import hal, hal_glib, linuxcnc, gtk, sys, time, gobject
+
+# pins:
+# - selected axis
+# - velocity
+# - step scale (0 for velocity)
+
+class joghelper(object):
+		WINDOW_TIMEOUT = 1 * 1000
+		AXIS = "xyzabc"
+
+		def __init__(self, argv):
+				self.label = None
+				self.window_time = 0
+				self.halcomp = hal.component("joghelper")
+				self.command = linuxcnc.command()
+				self.stat = linuxcnc.stat()
+
+				self.counts = [0, 0, 0, 0, 0, 0]
+				self.distance = 0
+				self.scale = 0
+				self.velocity = 0
+
+				self.current_axis_idx = None
+				self.is_moving = False
+				self.is_stepping = False
+				self.is_continuous_forward = False
+				self.is_continuous_backward = False
+
+				self._init_hal_pins()
+	
+				self.halcomp.ready()
+
+		def _init_hal_pins(self):
+				for idx in range(0, len(self.AXIS)):
+						pin = self.halcomp.newpin("jog.axis.{0}.jog-counts".format(idx), hal.HAL_S32, hal.HAL_IN)
+						hal_glib.GPin(pin).connect("value_changed", self._on_jog_counts_changed, idx)
+						pin = self.halcomp.newpin("jog.axis.{0}.jog-increasing".format(idx), hal.HAL_BIT, hal.HAL_IN)
+						hal_glib.GPin(pin).connect("value_changed", self._on_jog_increasing_changed, idx, True)
+						pin = self.halcomp.newpin("jog.axis.{0}.jog-decreasing".format(idx), hal.HAL_BIT, hal.HAL_IN)
+						hal_glib.GPin(pin).connect("value_changed", self._on_jog_increasing_changed, idx, False)
+
+				pin = self.halcomp.newpin("jog.axis.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+				hal_glib.GPin(pin).connect("value_changed", self._on_jog_scale_changed)
+				pin = self.halcomp.newpin("jog.axis.jog-velocity", hal.HAL_FLOAT, hal.HAL_IN)
+				hal_glib.GPin(pin).connect("value_changed", self._on_jog_velocity_changed)
+				self.halcomp.newpin("jog.axis.requested-distance", hal.HAL_FLOAT, hal.HAL_OUT)
+
+		def _on_jog_scale_changed(self, pin):
+				self._jog_reset(True)
+				self.scale = pin.get()
+
+		def _on_jog_velocity_changed(self, pin):
+				self._jog_reset(True)
+				self.velocity = pin.get()
+
+		def _on_jog_counts_changed(self, pin, axis_idx):
+				if 0 > axis_idx or axis_idx > len(self.AXIS): return
+
+				if self.is_moving and self.current_axis_idx <> axis_idx: 
+						self._jog_reset(True)
+
+				self.current_axis_idx = axis_idx
+				
+#				print "=========> axis_idx: {0}, new value: {1}, old value {2}".format(axis_idx, pin.get(), self.counts[self.current_axis_idx]) 
+				
+				delta = pin.get() - self.counts[self.current_axis_idx]
+				self.counts[self.current_axis_idx] = pin.get()
+
+				if not self._is_continuous():
+						self._jog_increment(delta)
+
+		def _on_jog_increasing_changed(self, pin, axis_idx, is_increasing):
+				if 0 > axis_idx or axis_idx > len(self.AXIS) or not self._is_continuous(): return
+
+				if self.is_moving and self.current_axis_idx <> axis_idx: 
+						self._jog_reset(True)
+
+				self.current_axis_idx = axis_idx
+				should_move = pin.get()
+	
+				if should_move and not self.is_moving:
+						if is_increasing:
+								self._jog_continuous_forward()
+						else:
+								self._jog_continuous_backward()
+				elif not should_move and self.is_moving:
+						self._jog_reset(True)
+
+		def _is_continuous(self):
+				return self.scale == 0
+
+		def _is_jog_possible(self):
+				return self.velocity > 0 and ((self._is_continuous() and self.distance == 0) or (not self._is_continuous() and self.distance <> 0))
+
+		def _jog_reset(self, should_stop = False):
+#				print "------------> stop request: {0}, is_moving: {1}, current_axis: {2}".format(should_stop, self.is_moving, self.current_axis_idx)
+
+				if should_stop and self.is_moving and self.current_axis_idx <> None:
+						self._stop()
+						self.is_moving = False
+						self.current_axis_idx = None
+						self.is_stepping = False
+						self.is_continuous_forward = False
+						self.is_continuous_backward = False
+
+				self.distance = 0
+				self.window_time = 0
+
+				if (self.label <> None):
+						self.label.get_parent().destroy()
+						self.label = None
+
+		def _move(self, is_forward):
+				if not self._is_jog_possible():
+						return
+	
+				direction = 1.0 if is_forward else -1.0
+				self.is_moving = True
+
+#				print "==========> is_cont: {0}, jogmode: {1}, axis: {2}, velocity: {3}, distance: {4}".format(
+									self._is_continuous(), self._get_jogmode(), self.current_axis_idx, direction * self.velocity, self.distance)
+
+				if self._is_continuous():  # incremental jogging
+						self.is_continuous_forward = direction > 0
+						self.is_continuous_backward = direction < 0
+						self.command.jog(linuxcnc.JOG_CONTINUOUS, self._get_jogmode(), self.current_axis_idx, direction * self.velocity)
+				else:  # continuous jogging
+						self.is_stepping = True
+						self.command.jog(linuxcnc.JOG_INCREMENT, self._get_jogmode(), self.current_axis_idx, direction * self.velocity, abs(self.distance))
+				self.command.wait_complete()
+		
+		def _stop(self):
+#				print "-------------------> STOP"
+
+				self.command.jog(linuxcnc.JOG_STOP, self._get_jogmode(), self.current_axis_idx)
+				self.command.wait_complete()
+
+		def _jog_continuous_forward(self):
+				if self.is_continuous_forward:
+						return
+
+				self._move(True)
+
+		def _jog_continuous_backward(self):
+				if self.is_continuous_backward:
+						return
+				
+				self._move(False)
+
+		def _get_jogmode(self):
+				self.set_motion_mode(1)
+				return 0
+
+				# gmoccapy copypaste
+				if self.stat.motion_mode == 1:
+						if self.stat.kinematics_type == linuxcnc.KINEMATICS_IDENTITY:
+								return 0
+						else:
+								return 1
+				else:
+						return 0
+
+		def set_motion_mode(self, state):
+				# 1:teleop, 0: joint
+				self.command.teleop_enable(state)
+				self.command.wait_complete()
+
+
+		def _current_millis(self):
+				return int(round(time.time() * 1000))
+
+		def _label_text(self):
+				return "{0}: {1}mm".format(self.AXIS[self.current_axis_idx].upper(), self.distance)
+	
+		def _jog_increment(self, delta):
+				if delta == 0: 
+						return
+
+				self.distance += delta * self.scale
+				
+				if (self.label is None):
+						self.label = gtk.Label(self._label_text())
+						window = gtk.Window(gtk.WINDOW_POPUP)
+						window.add(self.label)
+						window.show_all()
+				else:
+						self.label.set_text(self._label_text())
+
+				self.window_time = self._current_millis()
+				gobject.timeout_add(self.WINDOW_TIMEOUT, self.close_label)
+
+		def close_label(self):
+				if self._current_millis() - self.window_time >= self.WINDOW_TIMEOUT:
+						self._move(self.distance > 0)
+						self._jog_reset()
+
+
+sys.excepthook = lambda: sys.exit()
+
+if __name__ == "__main__": 
+		app = joghelper(sys.argv) 
+
+		try:
+				gtk.main()
+		except KeyboardInterrupt:
+				raise SystemExit
+

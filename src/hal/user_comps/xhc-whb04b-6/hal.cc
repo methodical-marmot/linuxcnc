@@ -171,7 +171,25 @@ Hal::~Hal()
     freeSimulatedPin((void**)(&memory->out.axisCJogDelta));
 
     freeSimulatedPin((void**)(&memory->out.axisXIncreasing));
+    freeSimulatedPin((void**)(&memory->out.axisYIncreasing));
+    freeSimulatedPin((void**)(&memory->out.axisZIncreasing));
+    freeSimulatedPin((void**)(&memory->out.axisAIncreasing));
+    freeSimulatedPin((void**)(&memory->out.axisBIncreasing));
+    freeSimulatedPin((void**)(&memory->out.axisCIncreasing));
+
     freeSimulatedPin((void**)(&memory->out.axisXDecreasing));
+    freeSimulatedPin((void**)(&memory->out.axisYDecreasing));
+    freeSimulatedPin((void**)(&memory->out.axisZDecreasing));
+    freeSimulatedPin((void**)(&memory->out.axisADecreasing));
+    freeSimulatedPin((void**)(&memory->out.axisBDecreasing));
+    freeSimulatedPin((void**)(&memory->out.axisCDecreasing));
+
+    freeSimulatedPin((void**)(&memory->in.axisXJogCountDisable));
+    freeSimulatedPin((void**)(&memory->in.axisYJogCountDisable));
+    freeSimulatedPin((void**)(&memory->in.axisZJogCountDisable));
+    freeSimulatedPin((void**)(&memory->in.axisAJogCountDisable));
+    freeSimulatedPin((void**)(&memory->in.axisBJogCountDisable));
+    freeSimulatedPin((void**)(&memory->in.axisCJogCountDisable));
 
     freeSimulatedPin((void**)(&memory->out.axisXJogEnable));
     freeSimulatedPin((void**)(&memory->out.axisYJogEnable));
@@ -500,36 +518,52 @@ void Hal::init(const MetaButtonCodes* metaButtons, const KeyCodes& keyCodes)
     newHalBit(HAL_OUT, &(memory->out.axisXSetVelocityMode), mHalCompId, "%s.axis.0.jog-vel-mode", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisXIncreasing), mHalCompId, "%s.axis.0.jog-increasing", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisXDecreasing), mHalCompId, "%s.axis.0.jog-decreasing", mComponentPrefix);
+    newHalBit(HAL_IN, &(memory->in.axisXJogCountDisable), mHalCompId, "%s.axis.0.jog-count-disable", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisYJogCounts), mHalCompId, "%s.axis.1.jog-counts", mComponentPrefix);
     newHalSigned32(HAL_OUT, &(memory->out.axisYJogDelta), mHalCompId, "%s.axis.1.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisYJogEnable), mHalCompId, "%s.axis.1.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisYJogScale), mHalCompId, "%s.axis.1.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisYSetVelocityMode), mHalCompId, "%s.axis.1.jog-vel-mode", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisYIncreasing), mHalCompId, "%s.axis.1.jog-increasing", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisYDecreasing), mHalCompId, "%s.axis.1.jog-decreasing", mComponentPrefix);
+    newHalBit(HAL_IN, &(memory->in.axisYJogCountDisable), mHalCompId, "%s.axis.1.jog-count-disable", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisZJogCounts), mHalCompId, "%s.axis.2.jog-counts", mComponentPrefix);
     newHalSigned32(HAL_OUT, &(memory->out.axisZJogDelta), mHalCompId, "%s.axis.2.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisZJogEnable), mHalCompId, "%s.axis.2.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisZJogScale), mHalCompId, "%s.axis.2.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisZSetVelocityMode), mHalCompId, "%s.axis.2.jog-vel-mode", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisZIncreasing), mHalCompId, "%s.axis.2.jog-increasing", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisZDecreasing), mHalCompId, "%s.axis.2.jog-decreasing", mComponentPrefix);
+    newHalBit(HAL_IN, &(memory->in.axisZJogCountDisable), mHalCompId, "%s.axis.2.jog-count-disable", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisAJogCounts), mHalCompId, "%s.axis.3.jog-counts", mComponentPrefix);
     newHalSigned32(HAL_OUT, &(memory->out.axisAJogDelta), mHalCompId, "%s.axis.3.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisAJogEnable), mHalCompId, "%s.axis.3.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisAJogScale), mHalCompId, "%s.axis.3.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisASetVelocityMode), mHalCompId, "%s.axis.3.jog-vel-mode", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisAIncreasing), mHalCompId, "%s.axis.3.jog-increasing", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisADecreasing), mHalCompId, "%s.axis.3.jog-decreasing", mComponentPrefix);
+    newHalBit(HAL_IN, &(memory->in.axisAJogCountDisable), mHalCompId, "%s.axis.3.jog-count-disable", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisBJogCounts), mHalCompId, "%s.axis.4.jog-counts", mComponentPrefix);
     newHalSigned32(HAL_OUT, &(memory->out.axisBJogDelta), mHalCompId, "%s.axis.4.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisBJogEnable), mHalCompId, "%s.axis.4.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisBJogScale), mHalCompId, "%s.axis.4.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisBSetVelocityMode), mHalCompId, "%s.axis.4.jog-vel-mode", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisBIncreasing), mHalCompId, "%s.axis.4.jog-increasing", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisBDecreasing), mHalCompId, "%s.axis.4.jog-decreasing", mComponentPrefix);
+    newHalBit(HAL_IN, &(memory->in.axisBJogCountDisable), mHalCompId, "%s.axis.4.jog-count-disable", mComponentPrefix);
 
     newHalSigned32(HAL_OUT, &(memory->out.axisCJogCounts), mHalCompId, "%s.axis.5.jog-counts", mComponentPrefix);
     newHalSigned32(HAL_OUT, &(memory->out.axisCJogDelta), mHalCompId, "%s.axis.5.jog-delta", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisCJogEnable), mHalCompId, "%s.axis.5.jog-enable", mComponentPrefix);
     newHalFloat(HAL_OUT, &(memory->out.axisCJogScale), mHalCompId, "%s.axis.5.jog-scale", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.axisCSetVelocityMode), mHalCompId, "%s.axis.5.jog-vel-mode", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisCIncreasing), mHalCompId, "%s.axis.5.jog-increasing", mComponentPrefix);
+    newHalBit(HAL_OUT, &(memory->out.axisCDecreasing), mHalCompId, "%s.axis.5.jog-decreasing", mComponentPrefix);
+    newHalBit(HAL_IN, &(memory->in.axisCJogCountDisable), mHalCompId, "%s.axis.5.jog-count-disable", mComponentPrefix);
 
     newHalBit(HAL_OUT, &(memory->out.isPendantSleeping), mHalCompId, "%s.pendant.is-sleeping", mComponentPrefix);
     newHalBit(HAL_OUT, &(memory->out.isPendantConnected), mHalCompId, "%s.pendant.is-connected", mComponentPrefix);
@@ -1432,23 +1466,63 @@ void Hal::setJogDelta(HandWheelCounters::CounterNameToIndex activeAxisName, int8
     else if (HandWheelCounters::CounterNameToIndex::AXIS_Y == activeAxisName)
     {
       *memory->out.axisYJogDelta = delta;
+      *memory->out.axisYIncreasing = delta > 0;
+      *memory->out.axisYDecreasing = delta < 0;
     }
     else if (HandWheelCounters::CounterNameToIndex::AXIS_Z == activeAxisName)
     {
       *memory->out.axisZJogDelta = delta;
+      *memory->out.axisZIncreasing = delta > 0;
+      *memory->out.axisZDecreasing = delta < 0;
     }
     else if (HandWheelCounters::CounterNameToIndex::AXIS_A == activeAxisName)
     {
       *memory->out.axisAJogDelta = delta;
+      *memory->out.axisAIncreasing = delta > 0;
+      *memory->out.axisADecreasing = delta < 0;
     }
     else if (HandWheelCounters::CounterNameToIndex::AXIS_B == activeAxisName)
     {
       *memory->out.axisBJogDelta = delta;
+      *memory->out.axisBIncreasing = delta > 0;
+      *memory->out.axisBDecreasing = delta < 0;
     }
     else if (HandWheelCounters::CounterNameToIndex::AXIS_C == activeAxisName)
     {
       *memory->out.axisCJogDelta = delta;
+      *memory->out.axisCIncreasing = delta > 0;
+      *memory->out.axisCDecreasing = delta < 0;
     }
+}
+
+bool Hal::isJogCountDisabled(HandWheelCounters::CounterNameToIndex activeAxisName) 
+{
+    if (HandWheelCounters::CounterNameToIndex::AXIS_X == activeAxisName)
+    {
+      return *memory->in.axisXJogCountDisable;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_Y == activeAxisName)
+    {
+      return *memory->in.axisYJogCountDisable;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_Z == activeAxisName)
+    {
+      return *memory->in.axisZJogCountDisable;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_A == activeAxisName)
+    {
+      return *memory->in.axisAJogCountDisable;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_B == activeAxisName)
+    {
+      return *memory->in.axisBJogCountDisable;
+    }
+    else if (HandWheelCounters::CounterNameToIndex::AXIS_C == activeAxisName)
+    {
+      return *memory->in.axisCJogCountDisable;
+    }
+
+    return false;
 }
 
 // ----------------------------------------------------------------------
