@@ -120,7 +120,7 @@ class joghelper(object):
 				self.is_moving = True
 
 #				print "==========> is_cont: {0}, jogmode: {1}, axis: {2}, velocity: {3}, distance: {4}".format(
-									self._is_continuous(), self._get_jogmode(), self.current_axis_idx, direction * self.velocity, self.distance)
+#									self._is_continuous(), self._get_jogmode(), self.current_axis_idx, direction * self.velocity, self.distance)
 
 				if self._is_continuous():  # incremental jogging
 						self.is_continuous_forward = direction > 0
