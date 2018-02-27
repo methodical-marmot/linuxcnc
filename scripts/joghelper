@@ -1,5 +1,5 @@
 #!/usr/bin/python2
-import hal, hal_glib, linuxcnc, gtk, sys, time, gobject
+import hal, hal_glib, linuxcnc, gtk, sys, time, gobject, pango
 
 # pins:
 # - selected axis
@@ -182,9 +182,10 @@ class joghelper(object):
 				
 				if (self.label is None):
 						self.label = gtk.Label(self._label_text())
-						label.modify_font(pango.FontDescription('sans 24'))
+						desc = pango.FontDescription('sans 24')
+						self.label.modify_font(desc)
 						window = gtk.Window(gtk.WINDOW_POPUP)
-						window.resize(200, 30)
+						window.move(20, 100)
 						window.set_position(gtk.WIN_POS_CENTER)
 						window.add(self.label)
 						window.show_all()
