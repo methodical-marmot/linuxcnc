@@ -1275,6 +1275,11 @@ bool Pendant::onButtonPressedEvent(const MetaButtonCodes& metaButton)
         mHal.setMacro16(true);
         isHandled = true;
     }
+    else if (metaButton == KeyCodes::Meta.function)
+    {
+        mHal.setFunction(true);
+        isHandled = true;
+    }
 
     mDisplay.onButtonPressedEvent(metaButton);
     return isHandled;
@@ -1435,6 +1440,11 @@ bool Pendant::onButtonReleasedEvent(const MetaButtonCodes& metaButton)
     else if (metaButton == KeyCodes::Meta.macro16)
     {
         mHal.setMacro16(false);
+        isHandled = true;
+    }
+    else if (metaButton == KeyCodes::Meta.function)
+    {
+        mHal.setFunction(false);
         isHandled = true;
     }
 
