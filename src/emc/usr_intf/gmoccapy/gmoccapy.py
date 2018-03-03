@@ -4486,6 +4486,20 @@ class gmoccapy(object):
         else:
             self.on_btn_jog_released(widget)
 
+    def _on_pin_jog_axis_selected(self, pin, selected_axis):
+        for axis in self.axis_list:
+            if axis == self.axisletter_four:
+                axis = 4
+            if axis == self.axisletter_five:
+                axis = 5
+
+            is_selected = self.halcomp['jog.axis.{0}-selected'.format(axis)]
+            homed_color = "#FFA500" if is_selected else self.homed_color
+            unhomed_color = "#FFA500" if is_selected else self.unhomed_color
+
+            self.widgets["Combi_DRO_{0}".format(axis)].set_property("homed_color", gtk.gdk.color_parse(homed_color))
+            self.widgets["Combi_DRO_{0}".format(axis)].set_property("unhomed_color", gtk.gdk.color_parse(unhomed_color))
+
     def _on_pin_jog_joint_changed(self, pin, joint, direction):
         if self.stat.motion_mode != 1 and pin.get():
             message = _("Joint jogging is only allowed in joint mode, but you are in world mode!")
@@ -4608,6 +4622,8 @@ class gmoccapy(object):
             hal_glib.GPin(pin).connect("value_changed", self._on_pin_jog_axis_changed, jog_button, 1)
             pin = self.halcomp.newpin("jog.axis.jog-{0}-minus".format(jog_button), hal.HAL_BIT, hal.HAL_IN)
             hal_glib.GPin(pin).connect("value_changed", self._on_pin_jog_axis_changed, jog_button, -1)
+            pin = self.halcomp.newpin("jog.axis.{0}-selected".format(jog_button), hal.HAL_BIT, hal.HAL_IN)
+            hal_glib.GPin(pin).connect("value_changed", self._on_pin_jog_axis_selected, jog_button)
 
         if self.stat.kinematics_type != linuxcnc.KINEMATICS_IDENTITY:
             for joint_button in range(0, self.stat.joints):
