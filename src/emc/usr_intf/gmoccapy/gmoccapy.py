@@ -2040,11 +2040,11 @@ class gmoccapy(object):
 
         for code in o_codes[1:]:
             pin_value = None
-                code, pin_name = code.split( "=", 1 )
-                try: 
-                    pin_value = subprocess.check_output( ["halcmd", "getp", pin_name] )
-                except subprocess.CalledProcessError, e:
-                   None 
+            code, pin_name = code.split( "=", 1 )
+            try: 
+                pin_value = subprocess.check_output( ["halcmd", "getp", pin_name] )
+            except subprocess.CalledProcessError, e:
+                None 
 
             parameter = self.dialogs.entry_dialog( self, data = pin_value, header = _( "Enter value:" ),
                                                    label = _("Set parameter {0} to:").format(code), integer = False )
