@@ -898,7 +898,7 @@ class gmoccapy(object):
         self.widgets.vbtb_jog_incr.pack_start(rbt0, True, True, 0)
         rbt0.set_property("draw_indicator", False)
         rbt0.show()
-        rbt0.modify_bg(gtk.STATE_ACTIVE, gtk.gdk.color_parse("#FFFF00"))
+        rbt0.modify_bg(gtk.STATE_ACTIVE, gtk.gdk.color_parse("gray"))
         rbt0.__name__ = "rbt0"
         self.incr_rbt_list.append(rbt0)
         # the rest of the buttons are now added to the group
@@ -910,7 +910,7 @@ class gmoccapy(object):
             self.widgets.vbtb_jog_incr.pack_start(rbt, True, True, 0)
             rbt.set_property("draw_indicator", False)
             rbt.show()
-            rbt.modify_bg(gtk.STATE_ACTIVE, gtk.gdk.color_parse("#FFFF00"))
+            rbt.modify_bg(gtk.STATE_ACTIVE, gtk.gdk.color_parse("gray"))
             rbt.__name__ = "rbt{0}".format(item)
             self.incr_rbt_list.append(rbt)
         self.active_increment = "rbt0"
@@ -2039,8 +2039,15 @@ class gmoccapy(object):
         command = str( "O<" + o_codes[0] + "> call" )
 
         for code in o_codes[1:]:
-            parameter = self.dialogs.entry_dialog(self, data=None, header=_("Enter value:"),
-                                                  label=_("Set parameter {0} to:").format(code), integer=False)
+            pin_value = None
+                code, pin_name = code.split( "=", 1 )
+                try: 
+                    pin_value = subprocess.check_output( ["halcmd", "getp", pin_name] )
+                except subprocess.CalledProcessError, e:
+                   None 
+
+            parameter = self.dialogs.entry_dialog( self, data = pin_value, header = _( "Enter value:" ),
+                                                   label = _("Set parameter {0} to:").format(code), integer = False )
             if parameter == "ERROR":
                 print(_("conversion error"))
                 self.dialogs.warning_dialog(self, _("Conversion error !"),
