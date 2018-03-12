@@ -46,6 +46,8 @@ class joghelper(object):
 		pin = self.halcomp.newpin("jog.axis.jog-velocity", hal.HAL_FLOAT, hal.HAL_IN)
 		hal_glib.GPin(pin).connect("value_changed", self._on_jog_velocity_changed)
 		self.halcomp.newpin("jog.axis.requested-distance", hal.HAL_FLOAT, hal.HAL_OUT)
+		pin = self.halcomp.newpin("jog.axis.home-all", hal.HAL_BIT, hal.HAL_IN)
+		hal_glib.GPin(pin).connect("value_changed", self._on_jog_home_all)
 
 	def _on_jog_scale_changed(self, pin):
 		self._jog_reset(True)
@@ -87,6 +89,12 @@ class joghelper(object):
 				self._jog_continuous_backward()
 		elif not should_move and self.is_moving:
 			self._jog_reset(True)
+
+	def _on_jog_home_all(self, pin):
+	  if pin.get():
+	    if self.stat.motion_mode != 1:
+	      self.set_motion_mode(0)
+	    self.command.home(-1)
 
 	def _is_continuous(self):
 		return self.scale == 0
